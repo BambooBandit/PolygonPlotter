@@ -35,7 +35,7 @@ public class Properties
 
         this.window.add(this.newProperty).row();
 
-        addProperty("Name", "Body " + duplicateIndex);
+        addProperty("Name", "Map Object " + duplicateIndex);
         duplicateIndex ++;
     }
 

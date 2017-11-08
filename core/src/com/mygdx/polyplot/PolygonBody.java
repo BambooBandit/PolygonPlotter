@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-public class PolygonBody
+public class PolygonBody implements MapObject
 {
     private Array<Vector2> vertices;
     private Polygon polygon;
@@ -59,10 +59,7 @@ public class PolygonBody
         return this.unprojectedPoint1;
     }
 
-    public Color getColor()
-    {
-        return this.color;
-    }
+    public Color getColor() { return this.color; }
 
     public void complete()
     {
@@ -96,6 +93,7 @@ public class PolygonBody
 
     public Polygon getPolygon() { return this.polygon; }
 
+    @Override
     public boolean isMouseOvered()
     {
         this.unprojectedPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -106,15 +104,17 @@ public class PolygonBody
         return false;
     }
 
+    @Override
     public boolean isSelected() { return this.selected; }
 
+    @Override
     public void setSelected(boolean selected)
     {
         if(selected)
         {
-            if(this.polyPlot.getSelectedPolygon() != null)
-                this.polyPlot.getSelectedPolygon().setSelected(false);
-            this.polyPlot.setSelectedPolygon(this);
+            if(this.polyPlot.getSelected() != null)
+                this.polyPlot.getSelected().setSelected(false);
+            this.polyPlot.setSelected(this);
         }
         this.selected = selected;
     }

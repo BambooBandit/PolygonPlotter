@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -37,19 +36,21 @@ public class PolyPlot extends ApplicationAdapter {
 	private BitmapFont font;
 	private BitmapFont headerFont;
 	private ToggleButton addPointButton;
-	private ToggleButton deleteShapeButton;
-	private ToggleButton selectShapeButton;
+	private ToggleButton deleteButton;
+	private ToggleButton selectButton;
+	private ToggleButton spawnBeaconButton;
 	private TextButton saveButton;
 	private Table table;
 	private OrthographicCamera camera;
 	private InputMultiplexer inputMultiplexer;
 
-	private PolygonBody selectedPolygon;
+	private MapObject selected;
 
 	private Window window;
 
 	private ShapeRenderer shapeRenderer;
 	private Array<PolygonBody> polygons;
+	private Array<SpawnBeacon> beacons;
 
 	@Override
 	public void create ()
@@ -72,6 +73,17 @@ public class PolyPlot extends ApplicationAdapter {
 
 		this.shapeRenderer.setProjectionMatrix(this.camera.combined);
 		this.shapeRenderer.begin();
+		for(int i = 0; i < this.beacons.size; i ++)
+		{
+			int width;
+			if(this.beacons.get(i).isSelected() || this.beacons.get(i).isMouseOvered())
+				width = 50;
+			else
+				width = 25;
+			this.shapeRenderer.setColor(this.beacons.get(i).getColor());
+			this.shapeRenderer.set(Filled);
+			this.shapeRenderer.ellipse(this.beacons.get(i).getPosition().x - width / 2, this.beacons.get(i).getPosition().y - width / 4, width, width / 2);
+		}
 		for(int i = 0; i < this.polygons.size; i++)
 		{
 			this.shapeRenderer.setColor(this.polygons.get(i).getColor());
@@ -121,7 +133,8 @@ public class PolyPlot extends ApplicationAdapter {
 		this.shapeRenderer = new ShapeRenderer();
 		this.shapeRenderer.setAutoShapeType(true);
 		this.polygons = new Array<PolygonBody>();
-		
+		this.beacons = new Array<SpawnBeacon>();
+
 		initFonts();
 		initTextures();
 		initStage();
@@ -169,18 +182,14 @@ public class PolyPlot extends ApplicationAdapter {
 		this.table = new Table();
 		this.table.setSkin(this.skin);
 		this.table.add(this.addPointButton).size(this.addPointButton.getWidth(), this.addPointButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
-		this.table.add(this.selectShapeButton).size(this.selectShapeButton.getWidth(), this.selectShapeButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
-		this.table.add(this.deleteShapeButton).size(this.deleteShapeButton.getWidth(), this.deleteShapeButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
+		this.table.add(this.spawnBeaconButton).size(this.spawnBeaconButton.getWidth(), this.spawnBeaconButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
+		this.table.add(this.selectButton).size(this.selectButton.getWidth(), this.selectButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
+		this.table.add(this.deleteButton).size(this.deleteButton.getWidth(), this.deleteButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
 		this.table.add(this.saveButton).size(this.saveButton.getWidth(), this.saveButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
 		this.table.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getWidth() / 35);
 
-		this.window = new Window("Properties", this.skin);
-		this.window.setSize(Gdx.graphics.getWidth() / 2.8f, Gdx.graphics.getHeight() / 1.15f);
-		this.window.setPosition(Gdx.graphics.getWidth() / 1.005f - this.window.getWidth(), Gdx.graphics.getHeight() / 9);
-
 		this.stage = new Stage();
 		this.stage.addActor(this.table);
-		this.stage.addActor(this.window);
 	}
 
 	private void initButtons()
@@ -194,38 +203,56 @@ public class PolyPlot extends ApplicationAdapter {
 			public void clicked(InputEvent event, float x, float y)
 			{
 				addPointButton.toggle();
-				selectShapeButton.toggle(false);
-				deleteShapeButton.toggle(false);
+				selectButton.toggle(false);
+				deleteButton.toggle(false);
+				spawnBeaconButton.toggle(false);
 			}
 		});
 
 
-		this.selectShapeButton = new ToggleButton("Select Shape", this.skin);
-		this.selectShapeButton.setSize(Gdx.app.getGraphics().getWidth() / 6, Gdx.app.getGraphics().getHeight() / 12);
-		this.selectShapeButton.getLabel().setColor(Color.BLACK);
-		this.selectShapeButton.addListener(new ClickListener()
+		this.selectButton = new ToggleButton("Select Shape", this.skin);
+		this.selectButton.setSize(Gdx.app.getGraphics().getWidth() / 6, Gdx.app.getGraphics().getHeight() / 12);
+		this.selectButton.getLabel().setColor(Color.BLACK);
+		this.selectButton.addListener(new ClickListener()
 		{
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				selectShapeButton.toggle();
-				deleteShapeButton.toggle(false);
+				selectButton.toggle();
+				deleteButton.toggle(false);
 				addPointButton.toggle(false);
-				if(selectedPolygon != null && !selectShapeButton.isToggled())
-					selectedPolygon.setSelected(false);
+				spawnBeaconButton.toggle(false);
+				if(selected != null && !selectButton.isToggled())
+					selected.setSelected(false);
 			}
 		});
 
-		this.deleteShapeButton = new ToggleButton("Delete Shape", this.skin);
-		this.deleteShapeButton.setSize(Gdx.app.getGraphics().getWidth() / 6, Gdx.app.getGraphics().getHeight() / 12);
-		this.deleteShapeButton.getLabel().setColor(Color.BLACK);
-		this.deleteShapeButton.addListener(new ClickListener()
+		this.deleteButton = new ToggleButton("Delete Shape", this.skin);
+		this.deleteButton.setSize(Gdx.app.getGraphics().getWidth() / 6, Gdx.app.getGraphics().getHeight() / 12);
+		this.deleteButton.getLabel().setColor(Color.BLACK);
+		this.deleteButton.addListener(new ClickListener()
 		{
 			@Override
 			public void clicked(InputEvent event, float x, float y)
 			{
-				deleteShapeButton.toggle();
-				selectShapeButton.toggle(false);
+				deleteButton.toggle();
+				selectButton.toggle(false);
+				addPointButton.toggle(false);
+				spawnBeaconButton.toggle(false);
+			}
+		});
+
+		this.spawnBeaconButton = new ToggleButton("Spawn Beacon", this.skin);
+		this.spawnBeaconButton.setSize(Gdx.app.getGraphics().getWidth() / 6, Gdx.app.getGraphics().getHeight() / 12);
+		this.spawnBeaconButton.getLabel().setColor(Color.BLACK);
+		this.spawnBeaconButton.addListener(new ClickListener()
+		{
+			@Override
+			public void clicked(InputEvent event, float x, float y)
+			{
+				spawnBeaconButton.toggle();
+				deleteButton.toggle(false);
+				selectButton.toggle(false);
 				addPointButton.toggle(false);
 			}
 		});
@@ -251,19 +278,22 @@ public class PolyPlot extends ApplicationAdapter {
 
 	public OrthographicCamera getCamera() { return camera; }
 	public ToggleButton getAddPointButton() { return this.addPointButton; }
-	public ToggleButton getDeleteShapeButton() { return this.deleteShapeButton; }
-	public ToggleButton getSelectShapeButton() { return this.selectShapeButton; }
+	public ToggleButton getDeleteButton() { return this.deleteButton; }
+	public ToggleButton getSelectButton() { return this.selectButton; }
+	public ToggleButton getSpawnBeaconButton() { return this.spawnBeaconButton; }
 	public Array<PolygonBody> getPolygons() { return this.polygons; }
-	public PolygonBody getSelectedPolygon() { return selectedPolygon; }
-	public void setSelectedPolygon(PolygonBody polygonBody)
+	public Array<SpawnBeacon> getBeacons() { return this.beacons; }
+	public MapObject getSelected() { return selected; }
+	public void setSelected(MapObject mapObject)
 	{
-		if(this.selectedPolygon != null && this.selectedPolygon == polygonBody)
+		if(this.selected != null && this.selected == mapObject)
 			return;
-		this.window.remove();
-		this.selectedPolygon = polygonBody;
-		if(polygonBody != null)
+		if(this.window != null)
+			this.window.remove();
+		this.selected = mapObject;
+		if(mapObject != null)
 		{
-			this.window = this.selectedPolygon.getProperties().getWindow();
+			this.window = this.selected.getProperties().getWindow();
 			this.stage.addActor(this.window);
 		}
 	}

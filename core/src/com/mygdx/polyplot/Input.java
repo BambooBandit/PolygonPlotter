@@ -15,7 +15,9 @@ public class Input implements InputProcessor
     private ToggleButton addPointButton;
     private ToggleButton deleteShapeButton;
     private ToggleButton selectShapeButton;
-    private Array<PolygonBody> polygons;
+    private ToggleButton spawnBeaconButton;
+    private Array<PolygonBody> polygonBodies;
+    private Array<SpawnBeacon> spawnBeacons;
 
     private boolean makeNewPolygon;
 
@@ -28,9 +30,11 @@ public class Input implements InputProcessor
         this.grabStart = new Vector3();
         this.grabCurrent = new Vector3();
         this.addPointButton = polyPlot.getAddPointButton();
-        this.deleteShapeButton = polyPlot.getDeleteShapeButton();
-        this.selectShapeButton = polyPlot.getSelectShapeButton();
-        this.polygons = polyPlot.getPolygons();
+        this.deleteShapeButton = polyPlot.getDeleteButton();
+        this.selectShapeButton = polyPlot.getSelectButton();
+        this.spawnBeaconButton = polyPlot.getSpawnBeaconButton();
+        this.polygonBodies = polyPlot.getPolygons();
+        this.spawnBeacons = polyPlot.getBeacons();
         this.makeNewPolygon = true;
     }
 
@@ -61,8 +65,8 @@ public class Input implements InputProcessor
         if(button == com.badlogic.gdx.Input.Buttons.RIGHT)
         {
             this.makeNewPolygon = true;
-            if(this.polygons.size > 0)
-                this.polygons.get(this.polygons.size - 1).complete();
+            if(this.polygonBodies.size > 0)
+                this.polygonBodies.get(this.polygonBodies.size - 1).complete();
             return false;
         }
 
@@ -70,9 +74,9 @@ public class Input implements InputProcessor
         {
             Vector2 vertice = new Vector2(this.grabStart.x, this.grabStart.y);
             if(makeNewPolygon)
-                this.polygons.add(new PolygonBody(polyPlot, vertice));
+                this.polygonBodies.add(new PolygonBody(polyPlot, vertice));
             else
-                this.polygons.get(this.polygons.size - 1).addPoint(vertice);
+                this.polygonBodies.get(this.polygonBodies.size - 1).addPoint(vertice);
             this.makeNewPolygon = false;
         }
         else
@@ -80,31 +84,58 @@ public class Input implements InputProcessor
 
         if(selectShapeButton.isToggled())
         {
-            for(int i = this.polygons.size - 1; i >= 0; i --)
+            for(int i = this.polygonBodies.size - 1; i >= 0; i --)
             {
-                if(this.polygons.get(i).isMouseOvered())
+                if(this.polygonBodies.get(i).isMouseOvered())
                 {
-                    this.polygons.get(i).setSelected(true);
+                    this.polygonBodies.get(i).setSelected(true);
+                    break;
+                }
+            }
+            for(int i = this.spawnBeacons.size - 1; i >= 0; i --)
+            {
+                if(this.spawnBeacons.get(i).isMouseOvered())
+                {
+                    this.spawnBeacons.get(i).setSelected(true);
                     break;
                 }
             }
         }
         else if(deleteShapeButton.isToggled())
         {
-            for(int i = this.polygons.size - 1; i >= 0; i --)
+            for(int i = this.polygonBodies.size - 1; i >= 0; i --)
             {
-                if(this.polygons.get(i).isMouseOvered())
+                if(this.polygonBodies.get(i).isMouseOvered())
                 {
-                    if(this.polyPlot.getSelectedPolygon() != null && this.polyPlot.getSelectedPolygon().equals(this.polygons.get(i)))
+                    if(this.polyPlot.getSelected() != null && this.polyPlot.getSelected().equals(this.polygonBodies.get(i)))
                     {
-                        this.polyPlot.getSelectedPolygon().setSelected(false);
-                        this.polyPlot.setSelectedPolygon(null);
+                        this.polyPlot.getSelected().setSelected(false);
+                        this.polyPlot.setSelected(null);
                     }
-                    this.polygons.removeValue(polygons.get(i), false);
+                    this.polygonBodies.removeValue(polygonBodies.get(i), false);
+                    break;
+                }
+            }
+            for(int i = this.spawnBeacons.size - 1; i >= 0; i --)
+            {
+                if(this.spawnBeacons.get(i).isMouseOvered())
+                {
+                    if(this.polyPlot.getSelected() != null && this.polyPlot.getSelected().equals(this.spawnBeacons.get(i)))
+                    {
+                        this.polyPlot.getSelected().setSelected(false);
+                        this.polyPlot.setSelected(null);
+                    }
+                    this.spawnBeacons.removeValue(spawnBeacons.get(i), false);
                     break;
                 }
             }
         }
+        else if(spawnBeaconButton.isToggled())
+        {
+            Vector2 position = new Vector2(this.grabStart.x, this.grabStart.y);
+            this.spawnBeacons.add(new SpawnBeacon(polyPlot, position));
+        }
+
         return false;
     }
 
@@ -136,6 +167,7 @@ public class Input implements InputProcessor
             this.camera.zoom += amount / 2f;
         else
             this.camera.zoom += amount / 10f;
+
         if(this.camera.zoom < 0.1f)
             this.camera.zoom = 0.1f;
         return false;
