@@ -32,7 +32,7 @@ public class SpawnBeacon implements MapObject
     {
         unprojectedPoint.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         this.camera.unproject(unprojectedPoint);
-        if(this.position.dst(unprojectedPoint.x, unprojectedPoint.y) < 30)
+        if(this.position.dst(unprojectedPoint.x, unprojectedPoint.y) < 20)
             return true;
         return false;
     }
