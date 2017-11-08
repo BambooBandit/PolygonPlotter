@@ -1,0 +1,211 @@
+
+ui.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+amulet
+  rotate: false
+  xy: 0, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+arm
+  rotate: false
+  xy: 0, 64
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+belt
+  rotate: false
+  xy: 64, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+chest
+  rotate: false
+  xy: 0, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+feet
+  rotate: false
+  xy: 64, 64
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+hand
+  rotate: false
+  xy: 128, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+head
+  rotate: false
+  xy: 64, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+legs
+  rotate: false
+  xy: 128, 64
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+none
+  rotate: false
+  xy: 192, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+onehand
+  rotate: false
+  xy: 128, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+ring
+  rotate: false
+  xy: 192, 64
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+shield
+  rotate: false
+  xy: 256, 128
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+shoulder
+  rotate: false
+  xy: 192, 0
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+default-window
+  rotate: false
+  xy: 256, 69
+  size: 36, 59
+  split: 14, 14, 40, 17
+  orig: 36, 59
+  offset: 0, 0
+  index: -1
+inventoryItem-window
+  rotate: false
+  xy: 256, 10
+  size: 36, 59
+  split: 14, 14, 40, 17
+  orig: 36, 59
+  offset: 0, 0
+  index: -1
+checkbox.off
+  rotate: false
+  xy: 320, 160
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+checkbox.over
+  rotate: false
+  xy: 320, 160
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+checkbox.on
+  rotate: false
+  xy: 320, 128
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+item-window
+  rotate: false
+  xy: 292, 92
+  size: 36, 36
+  split: 17, 17, 17, 17
+  orig: 36, 36
+  offset: 0, 0
+  index: -1
+button.down
+  rotate: false
+  xy: 292, 62
+  size: 30, 30
+  split: 17, 12, 15, 14
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+button.up
+  rotate: false
+  xy: 292, 32
+  size: 30, 30
+  split: 14, 15, 14, 15
+  orig: 30, 30
+  offset: 0, 0
+  index: -1
+default-round-down
+  rotate: false
+  xy: 328, 111
+  size: 17, 17
+  split: 0, 0, 0, 0
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+default-round
+  rotate: false
+  xy: 292, 15
+  size: 17, 17
+  split: 0, 0, 0, 0
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+load-background
+  rotate: false
+  xy: 328, 94
+  size: 17, 17
+  split: 10, 2, 10, 2
+  orig: 17, 17
+  offset: 0, 0
+  index: -1
+textfield
+  rotate: false
+  xy: 309, 16
+  size: 16, 16
+  split: 5, 5, 5, 5
+  orig: 16, 16
+  offset: 0, 0
+  index: -1
+load-foreground
+  rotate: false
+  xy: 322, 77
+  size: 15, 15
+  split: 7, 7, 7, 7
+  orig: 15, 15
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 256, 0
+  size: 5, 10
+  orig: 5, 10
+  offset: 0, 0
+  index: -1
+selection
+  rotate: false
+  xy: 352, 191
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
