@@ -26,7 +26,7 @@ public class SpawnBeacon implements MapObject
         this.polyPlot = polyPlot;
         this.camera = polyPlot.getCamera();
         this.color = new Color(Utils.randomFloat(0, 1), Utils.randomFloat(0, 1), Utils.randomFloat(0, 1), .5f);
-        this.properties = new Properties();
+        this.properties = new Properties(this);
     }
 
     public Color getColor() { return this.color; }
@@ -69,5 +69,7 @@ public class SpawnBeacon implements MapObject
     }
 
     public Sprite getSprite() { return this.sprite; }
+
+    public void setSprite(Sprite sprite) { this.sprite = sprite; }
 
 }

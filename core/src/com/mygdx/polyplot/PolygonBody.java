@@ -33,7 +33,7 @@ public class PolygonBody implements MapObject
         this.vertices = new Array<Vector2>();
         this.vertices.add(vertice);
         this.color = new Color(Utils.randomFloat(0, 1), Utils.randomFloat(0, 1), Utils.randomFloat(0, 1), .5f);
-        this.properties = new Properties();
+        this.properties = new Properties(this);
     }
 
     public void addPoint(Vector2 vertice)

@@ -2,12 +2,13 @@ package com.mygdx.polyplot;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 
 public class Properties
 {
@@ -17,8 +18,11 @@ public class Properties
 
     private Window window;
 
-    public Properties()
+    private MapObject mapObject;
+
+    public Properties(MapObject mapObject)
     {
+        this.mapObject = mapObject;
         this.window = new Window("Properties", PolyPlot.skin);
         this.window.setSize(Gdx.graphics.getWidth() / 2.8f, Gdx.graphics.getHeight() / 1.15f);
         this.window.setPosition(Gdx.graphics.getWidth() / 1.005f - this.window.getWidth(), Gdx.graphics.getHeight() / 9);
@@ -43,6 +47,19 @@ public class Properties
     {
         TextField propertyField = new TextField(property, PolyPlot.skin);
         TextField valueField = new TextField(value, PolyPlot.skin);
+        valueField.addListener(new EventListener()
+        {
+            @Override
+            public boolean handle(Event event)
+            {
+                if(mapObject.getClass() == SpawnBeacon.class)
+                {
+                    SpawnBeacon beacon = (SpawnBeacon) mapObject;
+                    beacon.setSprite(null);
+                }
+                return false;
+            }
+        });
         this.window.add(propertyField).pad(2).padBottom(Gdx.graphics.getWidth() / 100);
         this.window.add(valueField).pad(2).padBottom(Gdx.graphics.getWidth() / 100);
         this.window.add(createRemoveButton(propertyField, valueField)).row();
