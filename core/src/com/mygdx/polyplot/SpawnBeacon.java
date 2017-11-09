@@ -3,8 +3,11 @@ package com.mygdx.polyplot;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 public class SpawnBeacon implements MapObject
 {
@@ -15,6 +18,7 @@ public class SpawnBeacon implements MapObject
     private Vector2 position;
     private boolean selected = false;
     private static Vector3 unprojectedPoint = new Vector3();
+    private Sprite sprite;
 
     public SpawnBeacon(PolyPlot polyPlot, Vector2 position)
     {
@@ -56,5 +60,14 @@ public class SpawnBeacon implements MapObject
     public boolean isSelected() { return this.selected; }
 
     public Vector2 getPosition() { return this.position; }
+
+    public Sprite createSprite(String path, Vector2 position) throws GdxRuntimeException
+    {
+        this.sprite = new Sprite(new Texture(path));
+        this.sprite.setPosition(position.x - this.sprite.getWidth() / 2, position.y);
+        return this.sprite;
+    }
+
+    public Sprite getSprite() { return this.sprite; }
 
 }

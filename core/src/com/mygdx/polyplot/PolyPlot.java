@@ -16,12 +16,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
@@ -83,6 +81,39 @@ public class PolyPlot extends ApplicationAdapter {
 			this.shapeRenderer.setColor(this.beacons.get(i).getColor());
 			this.shapeRenderer.set(Filled);
 			this.shapeRenderer.ellipse(this.beacons.get(i).getPosition().x - width / 2, this.beacons.get(i).getPosition().y - width / 4, width, width / 2);
+			for(int k = 0; k < this.beacons.get(i).getProperties().getWindow().getChildren().size; k++)
+			{
+				if(this.beacons.get(i).getProperties().getWindow().getChildren().get(k).getClass() == TextField.class)
+				{
+					TextField property = (TextField) this.beacons.get(i).getProperties().getWindow().getChildren().get(k);
+					if(property.getText().equals("sprite"))
+					{
+						TextField value = (TextField) this.beacons.get(i).getProperties().getWindow().getChildren().get(k + 1);
+						Sprite sprite = this.beacons.get(i).getSprite();
+						if(sprite == null)
+						{
+							try
+							{
+								sprite = this.beacons.get(i).createSprite(value.getText(), this.beacons.get(i).getPosition());
+								this.shapeRenderer.end();
+								this.batch.begin();
+								sprite.draw(this.batch);
+								this.batch.end();
+								this.shapeRenderer.begin();
+							}
+							catch (GdxRuntimeException e) {}
+						}
+						else
+						{
+							this.shapeRenderer.end();
+							this.batch.begin();
+							sprite.draw(this.batch);
+							this.batch.end();
+							this.shapeRenderer.begin();
+						}
+					}
+				}
+			}
 		}
 		for(int i = 0; i < this.polygons.size; i++)
 		{
