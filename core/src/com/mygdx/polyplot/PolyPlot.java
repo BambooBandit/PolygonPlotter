@@ -14,12 +14,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.badlogic.gdx.utils.SnapshotArray;
+
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
@@ -301,11 +308,87 @@ public class PolyPlot extends ApplicationAdapter {
 		});
 	}
 
+
+
+
+
 	public void save()
 	{
-		// TODO
-		System.out.println("save");
+		PrintWriter writer = null;
+
+		try {
+			writer = new PrintWriter("map.pp", "UTF-8");
+			writer.println("map.png\n");
+			for(int i = 0; i < this.polygons.size; i ++)
+			{
+				writer.println("<polygon>");
+				writer.print("coordinates: ");
+				Array<Vector2> vertices = this.polygons.get(i).getVertices();
+				for(int k = 0; k < vertices.size; k++)
+				{
+					writer.print(vertices.get(k).x + " " + vertices.get(k).y);
+					if(k < vertices.size - 1)
+						writer.print(", ");
+					else
+						writer.println();
+				}
+				SnapshotArray<Actor> properties = this.polygons.get(i).getProperties().getWindow().getChildren();
+				saveProperties(writer, properties);
+				writer.println("</polygon>\n");
+			}
+
+			for(int i = 0; i < this.beacons.size; i ++)
+			{
+				writer.println("<beacon>");
+				writer.print("coordinates: ");
+				Vector2 vertice = this.beacons.get(i).getPosition();
+				writer.println(vertice.x + " " + vertice.y);
+				SnapshotArray<Actor> properties = this.beacons.get(i).getProperties().getWindow().getChildren();
+				saveProperties(writer, properties);
+				writer.println("</beacon>\n");
+			}
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 	}
+
+	private void saveProperties(PrintWriter writer, SnapshotArray<Actor> properties)
+	{
+		int skipIndex = 0;
+		for(int k = 2; k < properties.size; k++)
+		{
+			skipIndex ++;
+			if(skipIndex == 3)
+			{
+				skipIndex = 0;
+				continue;
+			}
+			else if(skipIndex == 1)
+			{
+				TextField property = (TextField) properties.get(k);
+				if(property.getText().isEmpty())
+					continue;
+				writer.print(property.getText() + ": ");
+			}
+			else if(skipIndex == 2)
+			{
+				TextField property = (TextField) properties.get(k - 1);
+				if(property.getText().isEmpty())
+					continue;
+				TextField value = (TextField) properties.get(k);
+				writer.println(value.getText());
+			}
+		}
+	}
+
+
+
+
+
+
 
 	public OrthographicCamera getCamera() { return camera; }
 	public ToggleButton getAddPointButton() { return this.addPointButton; }
