@@ -322,13 +322,13 @@ public class PolyPlot extends ApplicationAdapter {
 			for(int i = 0; i < this.polygons.size; i ++)
 			{
 				writer.println("<polygon>");
-				writer.print("coordinates: ");
+				writer.print("coordinates ");
 				Array<Vector2> vertices = this.polygons.get(i).getVertices();
 				for(int k = 0; k < vertices.size; k++)
 				{
 					writer.print(vertices.get(k).x + " " + vertices.get(k).y);
 					if(k < vertices.size - 1)
-						writer.print(", ");
+						writer.print(" ");
 					else
 						writer.println();
 				}
@@ -340,7 +340,7 @@ public class PolyPlot extends ApplicationAdapter {
 			for(int i = 0; i < this.beacons.size; i ++)
 			{
 				writer.println("<beacon>");
-				writer.print("coordinates: ");
+				writer.print("coordinates ");
 				Vector2 vertice = this.beacons.get(i).getPosition();
 				writer.println(vertice.x + " " + vertice.y);
 				SnapshotArray<Actor> properties = this.beacons.get(i).getProperties().getWindow().getChildren();
@@ -371,15 +371,20 @@ public class PolyPlot extends ApplicationAdapter {
 				TextField property = (TextField) properties.get(k);
 				if(property.getText().isEmpty())
 					continue;
-				writer.print(property.getText() + ": ");
+				writer.print("\"" + property.getText() + "\" ");
 			}
 			else if(skipIndex == 2)
 			{
 				TextField property = (TextField) properties.get(k - 1);
+				TextField value = (TextField) properties.get(k);
 				if(property.getText().isEmpty())
 					continue;
-				TextField value = (TextField) properties.get(k);
-				writer.println(value.getText());
+				else if(value.getText().isEmpty())
+				{
+					writer.println();
+					continue;
+				}
+				writer.println("\"" + value.getText() + "\"");
 			}
 		}
 	}
