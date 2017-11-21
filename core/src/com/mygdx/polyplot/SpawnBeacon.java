@@ -1,6 +1,7 @@
 package com.mygdx.polyplot;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -46,11 +47,20 @@ public class SpawnBeacon implements MapObject
     {
         if(selected)
         {
-            if(this.polyPlot.getSelected() != null)
-                this.polyPlot.getSelected().setSelected(false);
-            this.polyPlot.setSelected(this);
+            if(this.polyPlot.getSelected().size() > 0 && !Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+            {
+                for(int i = 0; i < this.polyPlot.getSelected().size(); i ++)
+                {
+                    this.polyPlot.getSelected().get(i).setSelected(false);
+                    this.polyPlot.getSelected().clear();
+                }
+            }
+            this.polyPlot.addSelected(this);
         }
+        else
+            this.polyPlot.getSelected().remove(this);
         this.selected = selected;
+        this.polyPlot.updateSelected();
     }
 
     @Override

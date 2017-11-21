@@ -88,7 +88,17 @@ public class Input implements InputProcessor
             {
                 if(this.polygonBodies.get(i).isMouseOvered())
                 {
-                    this.polygonBodies.get(i).setSelected(true);
+                    if(!Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.CONTROL_LEFT))
+                    {
+                        for(int k = 0; k < this.polyPlot.getSelected().size(); k ++)
+                        {
+                            if(!this.polyPlot.getSelected().get(k).equals(this.polygonBodies.get(i)))
+                                this.polyPlot.getSelected().get(k).setSelected(false);
+                        }
+                        this.polygonBodies.get(i).setSelected(true);
+                    }
+                    else
+                        this.polygonBodies.get(i).setSelected(!this.polygonBodies.get(i).isSelected());
                     break;
                 }
             }
@@ -96,7 +106,17 @@ public class Input implements InputProcessor
             {
                 if(this.spawnBeacons.get(i).isMouseOvered())
                 {
-                    this.spawnBeacons.get(i).setSelected(true);
+                    if(!Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.CONTROL_LEFT))
+                    {
+                        for(int k = 0; k < this.polyPlot.getSelected().size(); k ++)
+                        {
+                            if(!this.polyPlot.getSelected().get(k).equals(this.spawnBeacons.get(i)))
+                                this.polyPlot.getSelected().get(k).setSelected(false);
+                        }
+                        this.spawnBeacons.get(i).setSelected(true);
+                    }
+                    else
+                        this.spawnBeacons.get(i).setSelected(!this.spawnBeacons.get(i).isSelected());
                     break;
                 }
             }
@@ -107,10 +127,10 @@ public class Input implements InputProcessor
             {
                 if(this.polygonBodies.get(i).isMouseOvered())
                 {
-                    if(this.polyPlot.getSelected() != null && this.polyPlot.getSelected().equals(this.polygonBodies.get(i)))
+                    if(this.polyPlot.getSelected().size() > 0 && this.polyPlot.getSelected().contains(this.polygonBodies.get(i)))
                     {
-                        this.polyPlot.getSelected().setSelected(false);
-                        this.polyPlot.setSelected(null);
+                        this.polyPlot.getSelected().get(i).setSelected(false);
+                        this.polyPlot.getSelected().remove(this.polygonBodies.get(i));
                     }
                     this.polygonBodies.removeValue(polygonBodies.get(i), false);
                     break;
@@ -120,10 +140,10 @@ public class Input implements InputProcessor
             {
                 if(this.spawnBeacons.get(i).isMouseOvered())
                 {
-                    if(this.polyPlot.getSelected() != null && this.polyPlot.getSelected().equals(this.spawnBeacons.get(i)))
+                    if(this.polyPlot.getSelected().size() > 0 && this.polyPlot.getSelected().equals(this.spawnBeacons.get(i)))
                     {
-                        this.polyPlot.getSelected().setSelected(false);
-                        this.polyPlot.setSelected(null);
+                        this.polyPlot.getSelected().get(i).setSelected(false);
+                        this.polyPlot.getSelected().remove(this.spawnBeacons.get(i));
                     }
                     this.spawnBeacons.removeValue(spawnBeacons.get(i), false);
                     break;

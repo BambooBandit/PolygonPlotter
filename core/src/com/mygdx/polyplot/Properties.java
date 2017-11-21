@@ -9,6 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
 
 public class Properties
 {
@@ -16,12 +19,15 @@ public class Properties
 
     private TextButton newProperty;
 
+    private ArrayList<PropertyField> properties;
+
     private Window window;
 
     private MapObject mapObject;
 
     public Properties(MapObject mapObject)
     {
+        this.properties = new ArrayList<PropertyField>();
         this.mapObject = mapObject;
         this.window = new Window("Properties", PolyPlot.skin);
         this.window.setSize(Gdx.graphics.getWidth() / 2.8f, Gdx.graphics.getHeight() / 1.15f);
@@ -60,9 +66,11 @@ public class Properties
                 return false;
             }
         });
+        TextButton button = createRemoveButton(propertyField, valueField);
+        this.properties.add(new PropertyField(window, propertyField, valueField, button));
         this.window.add(propertyField).pad(2).padBottom(Gdx.graphics.getWidth() / 100);
         this.window.add(valueField).pad(2).padBottom(Gdx.graphics.getWidth() / 100);
-        this.window.add(createRemoveButton(propertyField, valueField)).row();
+        this.window.add(button).row();
     }
 
     public TextButton createRemoveButton(final Actor actor0, final Actor actor1)
@@ -76,6 +84,11 @@ public class Properties
                 window.getCell(actor0).pad(0);
                 window.getCell(actor1).pad(0);
                 window.getCell(button).pad(0);
+                for(int i = 0; i < properties.size(); i ++)
+                {
+                    if(properties.get(i).getProperty().equals(actor0))
+                        properties.remove(i);
+                }
                 actor0.remove();
                 actor1.remove();
                 button.remove();
@@ -83,6 +96,8 @@ public class Properties
         });
         return button;
     }
+
+    public ArrayList<PropertyField> getPropertiesAndValues() { return this.properties; }
 
     public Window getWindow() { return this.window; }
 }

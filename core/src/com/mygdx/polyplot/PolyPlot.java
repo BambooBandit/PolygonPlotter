@@ -27,6 +27,7 @@ import com.badlogic.gdx.utils.SnapshotArray;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 import static com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType.Filled;
 
@@ -49,9 +50,10 @@ public class PolyPlot extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private InputMultiplexer inputMultiplexer;
 
-	private MapObject selected;
+	private ArrayList<MapObject> selected;
 
 	private Window window;
+	private MultiProperties multiProperties;
 
 	private ShapeRenderer shapeRenderer;
 	private Array<PolygonBody> polygons;
@@ -81,8 +83,10 @@ public class PolyPlot extends ApplicationAdapter {
 		for(int i = 0; i < this.beacons.size; i ++)
 		{
 			int width;
-			if(this.beacons.get(i).isSelected() || this.beacons.get(i).isMouseOvered())
+			if(this.beacons.get(i).isSelected())
 				width = 50;
+			else if(this.beacons.get(i).isMouseOvered())
+				width = 35;
 			else
 				width = 25;
 			this.shapeRenderer.setColor(this.beacons.get(i).getColor());
@@ -131,8 +135,10 @@ public class PolyPlot extends ApplicationAdapter {
 				for (int k = 0; k <= this.polygons.get(i).getVertices().size; k++)
 				{
 					int width;
-					if(this.polygons.get(i).isSelected() || (this.polygons.get(i).isComplete() && this.polygons.get(i).isMouseOvered()))
+					if(this.polygons.get(i).isSelected())
 						width = 7;
+					else if((this.polygons.get(i).isComplete() && this.polygons.get(i).isMouseOvered()))
+						width = 4;
 					else
 						width = 2;
 					if (k + 1 >= this.polygons.get(i).getVertices().size)
@@ -156,9 +162,7 @@ public class PolyPlot extends ApplicationAdapter {
 	}
 	
 	@Override
-	public void dispose ()
-	{
-	}
+	public void dispose () { }
 
 	private void init()
 	{
@@ -172,6 +176,8 @@ public class PolyPlot extends ApplicationAdapter {
 		this.shapeRenderer.setAutoShapeType(true);
 		this.polygons = new Array<PolygonBody>();
 		this.beacons = new Array<SpawnBeacon>();
+
+		this.selected = new ArrayList<MapObject>();
 
 		initFonts();
 		initTextures();
@@ -226,6 +232,8 @@ public class PolyPlot extends ApplicationAdapter {
 		this.table.add(this.saveButton).size(this.saveButton.getWidth(), this.saveButton.getHeight()).pad(Gdx.graphics.getWidth() / 300);
 		this.table.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getWidth() / 35);
 
+		this.multiProperties = new MultiProperties(this);
+
 		this.stage = new Stage();
 		this.stage.addActor(this.table);
 	}
@@ -260,8 +268,8 @@ public class PolyPlot extends ApplicationAdapter {
 				deleteButton.toggle(false);
 				addPointButton.toggle(false);
 				spawnBeaconButton.toggle(false);
-				if(selected != null && !selectButton.isToggled())
-					selected.setSelected(false);
+				if(selected.size() > 0 && !selectButton.isToggled())
+					selected.get(0).setSelected(false);
 			}
 		});
 
@@ -402,18 +410,36 @@ public class PolyPlot extends ApplicationAdapter {
 	public ToggleButton getSpawnBeaconButton() { return this.spawnBeaconButton; }
 	public Array<PolygonBody> getPolygons() { return this.polygons; }
 	public Array<SpawnBeacon> getBeacons() { return this.beacons; }
-	public MapObject getSelected() { return selected; }
-	public void setSelected(MapObject mapObject)
+	public ArrayList<MapObject> getSelected() { return selected; }
+	public void addSelected(MapObject mapObject)
 	{
-		if(this.selected != null && this.selected == mapObject)
+		if(this.selected != null && this.selected.contains(mapObject))
 			return;
 		if(this.window != null)
 			this.window.remove();
-		this.selected = mapObject;
+		if(!Gdx.input.isKeyPressed(com.badlogic.gdx.Input.Keys.CONTROL_LEFT))
+			this.selected.clear();
+		this.selected.add(mapObject);
 		if(mapObject != null)
 		{
-			this.window = this.selected.getProperties().getWindow();
+			if(this.selected.size() == 1)
+				this.window = this.selected.get(0).getProperties().getWindow();
+			else
+				this.window = multiProperties.getWindow();
 			this.stage.addActor(this.window);
 		}
+	}
+	public void updateSelected()
+	{
+		if(this.window != null)
+			this.window.remove();
+		if(this.selected.size() == 1)
+			this.window = this.selected.get(0).getProperties().getWindow();
+		else
+		{
+			this.multiProperties.refresh();
+			this.window = multiProperties.getWindow();
+		}
+		this.stage.addActor(this.window);
 	}
 }
