@@ -45,8 +45,6 @@ public class Properties
 
         this.window.add(this.newProperty).row();
 
-        addProperty("Name", "Map Object " + duplicateIndex);
-        duplicateIndex ++;
     }
 
     public void addProperty(String property, String value)
