@@ -66,7 +66,12 @@ public class Input implements InputProcessor
         {
             this.makeNewPolygon = true;
             if(this.polygonBodies.size > 0)
-                this.polygonBodies.get(this.polygonBodies.size - 1).complete();
+            {
+                int size = this.polygonBodies.size - 1;
+                this.polygonBodies.get(size).complete();
+                if(this.polygonBodies.get(size).getVertices().size < 3)
+                    this.polygonBodies.removeIndex(size);
+            }
             return false;
         }
 
